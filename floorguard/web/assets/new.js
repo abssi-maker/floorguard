@@ -23,6 +23,7 @@ const who = {
   ultra: () => badge("ultra", modelName(S.models.planner) || "Nemotron 3 Ultra", "reasoning"),
   fast: () => badge("fast", modelName(S.models.fast) || "Nemotron Nano", "fast"),
   sim: () => badge("sim", "Simulator", "measures"),
+  tavily: () => badge("tavily", "Tavily", "web search"),
   py: () => badge("sim", "Python rules", "decides"),
 };
 function feed(id, kind, text, state = "run") {
@@ -142,6 +143,12 @@ const handlers = {
     caption(`<b>${esc(modelName(S.models.vision) || "Nemotron Super VL")}</b> is looking for forklifts, people, crossings and anything that blocks a line of sight.`);
     feed("vision", "vl", "Reading the photo…");
   },
+  prices_start: () => feed("prices", "tavily", "Searching supplier sites for today's prices of each control…"),
+  prices: (ev) => {
+    const items = Object.entries(ev.items || {}), name = { ped_gate: "pedestrian gate", warning_light: "floor warning light", mirror: "convex mirror", speed_sign: "speed sign" };
+    feed("prices", "tavily", ev.available === false ? esc(ev.note || "Price search unavailable; estimates used.")
+      : `Found current prices on <b>${items.reduce((a, [, it]) => a + it.sources.length, 0)} supplier pages</b>: ${items.map(([k, it]) => `${name[k]} ${usd(it.low)}–${usd(it.high)}`).join(" · ")}. ${esc(modelName(S.models.fast))} read each page; only prices printed on the page are kept.`, "done");
+  },
   sims: (ev) => { if (S.step >= 3) tweenCount(ev.crossings, ev.close_calls); else S.pending = ev; },
   vision_done: async (ev) => {
     const objs = ev.objects?.length ? ev.objects : (await (await fetch("/assets/w1.boxes.json")).json()).objects;
@@ -225,7 +232,7 @@ const handlers = {
     if (!best || !S.player) finish(r);
     caption(best ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:1.2rem;flex-wrap:wrap">
         <div><p style="font-family:var(--display);font-size:1.9rem;font-weight:700;color:var(--text)">${esc(cap(shortLabel(best.package.label).toLowerCase()))}</p>
-        <p class="meta" style="margin:.2rem 0 .4rem">${esc(cap(best.controls.join(" · ")))}</p><p>Close calls drop from <b class="red">${shiftNum(perShift(today, lim))}</b> to <b class="green">${shiftNum(perShift(best, lim))}</b> per shift (${human(perShift(best, lim))}). The usual fix only reaches ${shiftNum(perShift(usual, lim))}. Example cost ${usd(best.example_cost_usd)}.</p></div>
+        <p class="meta" style="margin:.2rem 0 .4rem">${esc(cap(best.controls.join(" · ")))}</p><p>Close calls drop from <b class="red">${shiftNum(perShift(today, lim))}</b> to <b class="green">${shiftNum(perShift(best, lim))}</b> per shift (${human(perShift(best, lim))}). The usual fix only reaches ${shiftNum(perShift(usual, lim))}. Cost ${usd(best.example_cost_usd)}, priced from supplier pages where found.</p></div>
         <a class="btn primary" href="/report/${esc(r.id)}">Open the full report</a></div>`
       : `No tested package meets your limits. <a class="btn primary" href="/report/${esc(r.id)}">See what was tested</a>`);
   },
@@ -287,7 +294,8 @@ async function startReplay(id) {
   const n = r.n, conflicts = (xs) => xs.reduce((a, x) => a + x.conflicts, 0), t = (xs) => xs.map((x) => ({ label: x.package.label, conflicts_per_1000: x.conflict_rate_per_1000, close_calls_per_shift: perShift(x, r.limits) }));
   const stressN = Object.keys(r.stress_tests).length, cands = r.proposed.length + r.revised.length;
   let sims = r.single_controls.length, close = conflicts(r.single_controls);
-  const evs = [{ stage: "models", provider: r.provider, models: r.models }, { stage: "vision" }, { stage: "sims", crossings: sims * n, close_calls: close },
+  const evs = [{ stage: "models", provider: r.provider, models: r.models }, { stage: "vision" },
+    ...(r.prices ? [{ stage: "prices_start" }, { stage: "prices", ...r.prices }] : []), { stage: "sims", crossings: sims * n, close_calls: close },
     { stage: "vision_done", objects: r.vision?.objects || [] }, { stage: "single_controls_done", table: t(r.single_controls), lead_s: r.single_controls[0].first_sight_lead_s_median },
     { stage: "propose" }];
   sims += r.proposed.length; close += conflicts(r.proposed);

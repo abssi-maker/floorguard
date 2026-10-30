@@ -21,9 +21,11 @@ from pydantic import BaseModel, Field
 from ..jsonsafe import clean
 from ..runners.local import LocalRunner, per_shift
 from ..sim.model import simulate
-from ..sim.scene import EXAMPLE_COSTS, Assumptions, Package, Scene
+from ..sim.scene import Assumptions, Package, Scene
 from .llm import Client
 from .mapper import draft_map
+from .prices import costs_from
+from .prices import fetch as fetch_prices
 
 RUNS = Path(__file__).resolve().parents[2] / "runs"
 
@@ -123,7 +125,7 @@ def run(scene_name: str = "w1", limits: Limits | None = None, assumptions: Assum
         nonlocal sims
         aa = a.model_copy(update=overrides or {})
         jobs = [{"scene": scene_name, "package": p.model_dump(exclude={"why"}), "assumptions": aa.model_dump(),
-                 "n": n, "seed": seed, "tag": tag} for p in pkgs]
+                 "n": n, "seed": seed, "tag": tag, "costs": costs} for p in pkgs]
         sims += len(jobs)
         out = runner.run(jobs)
         nonlocal close_calls
@@ -151,6 +153,15 @@ def run(scene_name: str = "w1", limits: Limits | None = None, assumptions: Assum
     vt = threading.Thread(target=_draft)
     vt.start()
 
+    # 0b. Tavily finds current supplier prices for the controls (in parallel with the vision draft).
+    progress({"stage": "prices_start", "message": "Tavily searches suppliers for current prices"})
+    try:
+        prices = fetch_prices(llm)
+    except Exception as e:  # shown in the UI; the labelled estimates are used instead
+        prices = {"available": False, "note": f"price search failed: {str(e)[:200]}", "items": {}}
+    costs = costs_from(prices)
+    progress({"stage": "prices", **prices})
+
     # 1. Every control alone, plus the usual fix, on identical random crossings (no model involved).
     progress({"stage": "single_controls", "message": "Testing every control alone"})
     singles = evaluate(SINGLE_CONTROLS + [USUAL_FIX], tag="single")
@@ -167,7 +178,8 @@ def run(scene_name: str = "w1", limits: Limits | None = None, assumptions: Assum
     context = {
         "site": "Warehouse intersection: a forklift lane passes a pedestrian zebra crossing; a steel column and pallet stacks beside the crossing hide approaching forklifts from people about to cross.",
         "manager_limits": limits.model_dump(), "controls_allowed": controls_catalog,
-        "example_costs_usd": EXAMPLE_COSTS, "behaviour_assumptions": a.model_dump(),
+        "costs_usd": costs, "costs_note": f"sourced from supplier web pages today for: {', '.join(prices.get('items') or {}) or 'none'}; the others are estimates",
+        "behaviour_assumptions": a.model_dump(),
         "measured_single_controls": _table(singles, site),
         "metric": "simulated conflicts per 1,000 forklift–pedestrian interactions (time-to-collision < 1.5 s, post-encroachment time < 1.0 s, or contact)",
     }
@@ -259,7 +271,7 @@ def run(scene_name: str = "w1", limits: Limits | None = None, assumptions: Assum
         "recommendation": choice, "verdict": "recommend" if choice else "no tested package meets your limits",
         "brief": brief.model_dump() if brief else None,
         "replays": replays,
-        "vision": vision, "photo_url": photo_url,
+        "vision": vision, "photo_url": photo_url, "prices": prices, "costs": costs,
         "trace": llm.trace_dicts(), "simulations": sims, "wall_s": round(time.time() - t0, 1),
     }
     RUNS.mkdir(exist_ok=True)

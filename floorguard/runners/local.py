@@ -19,7 +19,7 @@ def evaluate(job: dict) -> dict:
     a = Assumptions.model_validate(job.get("assumptions", {}))
     r = simulate(scene, pkg, a, n=job.get("n", 10_000), seed=job.get("seed", 1))
     out = r.summary()
-    out.update(package=pkg.model_dump(), controls=pkg.controls(), example_cost_usd=example_cost(pkg),
+    out.update(package=pkg.model_dump(), controls=pkg.controls(), example_cost_usd=example_cost(pkg, job.get("costs")),
                assumptions=a.model_dump(), tag=job.get("tag", ""), runtime_s=round(time.time() - t, 2),
                window_s=a.timing_window_s[1] - a.timing_window_s[0])
     return out

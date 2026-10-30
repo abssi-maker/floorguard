@@ -17,6 +17,7 @@ PROMPT = """Locate objects for a forklift–pedestrian near-miss simulation in t
 Include every clearly visible vehicle and person, the main sightline blockers (columns, racks, pallet stacks),
 any floor crossing markings, and up to 3 conflict points where vehicle and pedestrian paths meet with limited visibility.
 Use precise vehicle labels (e.g. "counterbalance forklift", "reach truck"). Do not invent objects.
+List at most 20 objects, the most relevant to this crossing first.
 Boxes are [x0, y0, x1, y1] integers normalised to 0-1000 of image width and height."""
 
 
@@ -38,5 +39,5 @@ def draft_map(llm: Client, image: Path) -> dict:
     content = [{"type": "text", "text": PROMPT},
                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}}]
     draft = llm.json_call("vision", "You draft scene maps for a safety simulation.", content, Draft,
-                          "draft the scene from the photo", max_tokens=4000)
+                          "draft the scene from the photo", max_tokens=6000)
     return {"available": True, "model": llm.models["vision"], "objects": [o.model_dump() for o in draft.objects]}

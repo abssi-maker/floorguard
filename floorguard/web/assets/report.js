@@ -8,6 +8,7 @@ const plainFrom = (catalog) => (s) => {
     ({ conflicts_per_1000: "close calls per 1,000", close_calls_per_shift: "close calls per shift", ped_wait_s: "pedestrian wait", truck_delay_s: "truck delay", example_cost_usd: "cost" }[m]));
 };
 const SHORT = { sign_compliance_50: "Half ignore the sign", gate_compliance_60: "Gate propped open", slow_reactions: "Slow reactions", pallet_in_sightline: "Pallet in the way", shortcut_40: "Old route kept", map_scale_minus_20: "Map 20% smaller", night_shift_inattention: "Tired night shift", mirror_ignored: "Mirror ignored" };
+let TILE_RUN = null;
 const stressFails = (r, x) => Object.values(r.stress_results[x.package.label] || {}).filter((v) => v > 2 * r.limits.target_conflicts_per_1000).length;
 
 // ---------- before / after on the sample photo (positions are illustrative) ----------
@@ -57,11 +58,28 @@ function compare(scene, r) {
   show(r.recommendation ? "after" : "before");
 }
 
+const PRICED = { ped_gate: "Pedestrian gate", warning_light: "Floor warning light", mirror: "Convex mirror", speed_sign: "Speed sign" };
+const FIELD = { ped_gate: "ped_gate", warning_light: "warning_light", mirror: "mirror", speed_limit_kmh: "speed_sign" };
+// is every priced control in this package sourced from the web today?
+const sourced = (r, x) => { const items = r.prices?.items || {}; const used = Object.entries(FIELD).filter(([f]) => x.package[f]).map(([, k]) => k); return used.length > 0 && used.every((k) => items[k]); };
+
+function pricesPanel(r) {
+  const p = r.prices;
+  if (!p || p.available === false) return `<p class="meta">${esc(p?.note || "No web prices for this run; costs are estimates.")}</p>`;
+  const rows = Object.entries(PRICED).map(([k, name]) => {
+    const it = p.items?.[k];
+    return `<tr><td>${name}</td><td>${it ? `${usd(it.low)}–${usd(it.high)}` : "—"}</td><td>${it ? usd(it.used) : `${usd(r.costs?.[k])} <span class="est">estimate</span>`}</td>
+      <td class="src" style="text-align:left">${it ? it.sources.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(new URL(s.url).hostname.replace("www.", ""))}</a> ${usd(s.price)}`).join(" · ") : "no product page with a price found"}</td></tr>`;
+  }).join("");
+  return `<table class="plain"><thead><tr><th>Control</th><th>Price range found</th><th>Used</th><th style="text-align:left">Sources (unit price on the page)</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="meta" style="margin-top:.6rem">Tavily searched ${p.searches} supplier queries on ${esc(p.date)} and returned ${p.pages_read} pages with prices; ${esc(modelName(r.models.fast))} read each one, and a price is kept only if that exact figure is printed on the page. Markings, moved crossings and barriers have no unit price online and stay estimates. Get your own quotes before buying.</p>`;
+}
+
 function tile(title, r, lim, cls) {
   const ok = meets(r, lim);
   return `<div class="panel tile ${cls}"><h3>${esc(title)}</h3><div><p class="big ${ok ? "green" : "red"}">${shiftNum(perShift(r, lim))}</p><p class="sub">close calls per shift · simulated</p>
     <p style="margin-top:.6rem"><span class="chip ${ok ? "ok" : "bad"}">${ok ? "✓ meets your limits" : "▲ misses your limits"}</span></p></div>
-    <div class="cost"><small>Cost</small><b>${usd(r.example_cost_usd)}</b></div></div>`;
+    <div class="cost"><small>Cost${r.example_cost_usd ? (TILE_RUN && sourced(TILE_RUN, r) ? ` <span class="est web">web prices</span>` : ` <span class="est">estimate</span>`) : ""}</small><b>${usd(r.example_cost_usd)}</b></div></div>`;
 }
 
 function stressTable(r) {
@@ -99,6 +117,7 @@ function steps(r, plain) {
   const k = Object.keys(r.stress_tests).length, best = r.recommendation;
   const list = [
     { w: vl, t: "Read the photo", s: `${r.vision?.objects?.length || 0} objects found: vehicles, people, the crossing, and what blocks a line of sight. A person confirmed the map.`, calls: by("draft") },
+    ...(r.prices?.available ? [{ w: b("tavily", "Tavily", "web search"), t: "Found today's prices for the controls", s: `${Object.keys(r.prices.items || {}).length} of 4 priced from ${Object.values(r.prices.items || {}).reduce((a, it) => a + it.sources.length, 0)} supplier pages; ${modelName(r.models.fast)} read each page and Python kept only prices printed on it.`, calls: by("read supplier") }] : []),
     { w: sim, t: "Tested every control alone", s: `${r.single_controls.length - 1} controls and the usual fix, each on the same ${r.n.toLocaleString("en-US")} simulated crossings.` },
     { w: ultra, t: `Proposed ${r.proposed.length} packages`, s: names(r.proposed), q: `“${esc(plain(r.hypothesis))}”<ul>${r.proposed.map((p) => `<li><b>${esc(shortLabel(p.package.label))}</b>: ${esc(plain(p.why))}</li>`).join("")}</ul>`, calls: by("propose") },
     { w: fast, t: `Picked ${k} stress tests to break the best one`, s: Object.values(r.stress_tests).join(" · "), q: `“${esc(plain(r.stress_why))}”`, calls: by("pick") },
@@ -120,11 +139,12 @@ function brief(r) {
     <p class="v">${esc(head)}</p>${b ? `<p class="w">${esc(b.why)}</p>` : ""}
     <div class="cols"><div><h4>Recommended change</h4><ul>${(best?.controls || ["—"]).map((c) => `<li>${esc(cap(c))}</li>`).join("")}</ul>
       <h4>Check on the floor before buying</h4><ul>${(b?.floor_checks || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
-      <h4>After installation</h4><ul>${(b?.after_install || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul></div>
+      <h4>After installation</h4><ul>${(b?.after_install || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
+      <h4>Prices used</h4><ul>${Object.entries(FIELD).filter(([f]) => best?.package[f]).map(([, k]) => { const it = r.prices?.items?.[k]; return `<li>${PRICED[k]}: ${it ? `${usd(it.used)} (web, ${usd(it.low)}–${usd(it.high)}, ${it.sources.map((s) => esc(new URL(s.url).hostname.replace("www.", ""))).join(", ")})` : `${usd(r.costs?.[k] ?? 0)} (estimate)`}</li>`; }).join("") || "<li>—</li>"}</ul></div>
     <div><h4>Assumptions used</h4><ul><li>${pct(a.ped_look)} of pedestrians look before crossing; ${pct(a.driver_attention)} of drivers attentive</li>
       <li>Speed-sign compliance ${pct(a.sign_compliance)}; gate used as intended by ${pct(a.gate_compliance)}; mirror checked by ${pct(a.mirror_use)}</li>
       <li>Forklift speed ${a.forklift_kmh.join("–")} km/h; reaction ${a.reaction_s.join("–")} s; braking ${a.brake_ms2.join("–")} m/s²</li></ul>
-      <h4>What these numbers are</h4><ul><li>Simulated close calls in a simplified 2D model, not injury predictions.</li><li>Costs are illustrative; enter your quotes.</li>
+      <h4>What these numbers are</h4><ul><li>Simulated close calls in a simplified 2D model, not injury predictions.</li><li>Costs: web prices where shown, estimates elsewhere; get your own quotes.</li>
       <li>Run ${esc(r.id)} · Nemotron on ${esc(providerName(r.provider))} · seed ${r.seed}</li></ul></div></div></article>`;
 }
 
@@ -147,6 +167,7 @@ async function init() {
   const id = location.pathname.split("/").pop();
   const [r, scene] = await Promise.all([api(`/api/runs/${id}`), api("/api/scene/w1")]);
   setProvider(r.provider);
+  TILE_RUN = r;
   const lim = r.limits, today = r.single_controls[0], usual = r.single_controls.at(-1), best = r.recommendation, plain = plainFrom(scene.stress_catalog);
   const fails = best ? stressFails(r, best) : 0, k = Object.keys(r.stress_tests).length;
   document.title = `FloorGuard · ${siteName(r.photo_url)}`;
@@ -164,10 +185,11 @@ async function init() {
     <section class="row2"><div class="panel"><div class="panel-h"><h2>Stress tests chosen by Nemotron to break it</h2><span class="meta">simulated</span></div><div class="panel-b">${stressTable(r)}</div></div>
       <div class="panel"><div class="panel-h"><h2>Worst-case examples · contact remains possible</h2></div><div class="panel-b"><div class="replays" id="replays"></div>
       <p class="meta" style="margin-top:.6rem">The fix makes close calls rarer; it does not remove every simulated contact. Each side shows its own worst crossing out of 10,000, not the same crossing replayed.</p></div></div></section>
+    <section class="panel sec"><div class="panel-h"><h2>Prices found on the web</h2><span class="meta">Tavily · ${esc(r.prices?.date || "")}</span></div><div class="panel-b">${pricesPanel(r)}</div></section>
     <section class="panel sec">${steps(r, plain)}</section>
     <section class="sec">${brief(r)}</section>
     <details class="more sec"><summary>For the skeptic: does the model earn its place?</summary><div class="evidence" id="evidence"></div></details>
-    <p class="foot"><b>Limits.</b> FloorGuard simulates close calls (time-to-collision under 1.5 s, post-encroachment time under 1.0 s, or contact) in a simplified 2D model of one intersection, under the assumptions shown. They are not injury predictions. The map is a hand-confirmed draft from one photo, so distances are approximate. Costs are illustrative; enter your quotes. Decision support, not a safety certification.</p>`;
+    <p class="foot"><b>Limits.</b> FloorGuard simulates close calls (time-to-collision under 1.5 s, post-encroachment time under 1.0 s, or contact) in a simplified 2D model of one intersection, under the assumptions shown. They are not injury predictions. The map is a hand-confirmed draft from one photo, so distances are approximate. Costs use web prices where found and estimates elsewhere; get your own quotes. Decision support, not a safety certification.</p>`;
   compare(scene, r);
   replays(scene, r);
   $("#pdf").addEventListener("click", () => window.print());

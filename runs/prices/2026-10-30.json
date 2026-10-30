@@ -1,0 +1,76 @@
+{
+ "available": true,
+ "date": "2026-10-30",
+ "searches": 4,
+ "pages_read": 14,
+ "search_s": 0.71,
+ "items": {
+  "warning_light": {
+   "sources": [
+    {
+     "url": "https://www.globalindustrial.com/p/virtual-led-projector-safety-sign-s-caution-forklift-symbol-50w-yellow",
+     "product": "Visual Workplace\u00ae Virtual LED Projector, Safety Sign (S), Caution, Forklift Symbol, 50W, Yellow",
+     "price": 1915.0
+    },
+    {
+     "url": "https://www.zoro.com/visual-workplace-virtual-led-safety-walkway-projector-66-3139-618ex-ps154/i/G014868471",
+     "product": "Virtual LED Safety Walkway Projector - Zoro Tools",
+     "price": 2054.99
+    }
+   ],
+   "low": 1915.0,
+   "high": 2054.99,
+   "used": 1985
+  },
+  "mirror": {
+   "sources": [
+    {
+     "url": "https://www.globalindustrial.com/p/acrylic-outdoor-convex-mirror-26-diameter",
+     "product": "Se-Kure\u0099 Round Acrylic Convex Mirror, Outdoor, 26\" Dia., 160\u00b0 Viewing Angle",
+     "price": 99.95
+    },
+    {
+     "url": "https://www.globalindustrial.com/p/heavy-duty-round-convex-mirror-glass-outdoor-26-dia",
+     "product": "See All Mirrors\u00ae Heavy Duty Round Convex Mirror, Glass, Outdoor, 26\" Dia.",
+     "price": 109.95
+    },
+    {
+     "url": "https://www.globalindustrial.com/p/relius-solutions-convex-safety-mirrors-high-visibility-acrylic-26-dia-outdoor",
+     "product": "Round Acrylic Convex Mirror W/Red & White Border, Outdoor, 26\" Dia., 160\u00b0 Viewing Angle",
+     "price": 47.95
+    },
+    {
+     "url": "https://www.uline.com/Product/Detail/H-1548-O/Safety-Mirrors/Convex-Safety-Mirror-26-Acrylic-Outdoor",
+     "product": "Convex Safety Mirror - 26",
+     "price": 150.0
+    }
+   ],
+   "low": 47.95,
+   "high": 150.0,
+   "used": 105
+  },
+  "speed_sign": {
+   "sources": [
+    {
+     "url": "https://www.zoro.com/lyle-forklift-speed-limit-5-mph-12x18-diamond-grade-white-g-3026-dg12x18/i/G322955979",
+     "product": "Forklift, Speed Limit 5 MPH, 12x18, Diamond Grade, White",
+     "price": 30.19
+    },
+    {
+     "url": "https://www.globalindustrial.com/p/durastripe-12x9-rectangle-3-mph-speed-limit",
+     "product": "Durastripe 12\"X9\" Rectangle - 3 Mph Speed Limit",
+     "price": 15.25
+    },
+    {
+     "url": "https://www.zoro.com/lyle-forklift-speed-limit-5-mph-7x10-engineer-grade-white-g-16990-eg7x10/i/G822946781",
+     "product": "Forklift, Speed Limit 5 MPH, 7x10, Engineer Grade, White",
+     "price": 9.15
+    }
+   ],
+   "low": 9.15,
+   "high": 30.19,
+   "used": 15
+  }
+ },
+ "cached": false
+}

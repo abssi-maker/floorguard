@@ -102,7 +102,8 @@ EXAMPLE_COSTS = {"mirror": 150, "speed_sign": 100, "stop_line": 200, "move_cross
                  "barrier": 2500, "keep_clear": 150, "warning_light": 3500, "ped_gate": 1200}
 
 
-def example_cost(p: Package) -> int:
+def example_cost(p: Package, costs: dict | None = None) -> int:
+    EXAMPLE_COSTS = costs or globals()["EXAMPLE_COSTS"]  # this run's prices (sourced where found), else the estimates
     c = 0
     c += EXAMPLE_COSTS["mirror"] if p.mirror else 0
     c += EXAMPLE_COSTS["speed_sign"] if p.speed_limit_kmh is not None else 0

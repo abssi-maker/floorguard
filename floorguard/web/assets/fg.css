@@ -290,3 +290,9 @@ table.plain { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 .picked h3 { font-size: 1.6rem; }
 .picked p { color: var(--text-2); margin-top: .4rem; }
 .picked p.tag { color: #15171b; margin-top: 0; }
+
+.badge.tavily { border-color: #3dd6c6; color: #8ff0e5; }
+.src { font-size: .85rem; color: var(--text-3); }
+.src a { color: #8ff0e5; }
+.est { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: .05rem .4rem; border-radius: 4px; border: 1px solid var(--line-2); color: var(--text-3); margin-left: .4rem; vertical-align: 2px; }
+.est.web { border-color: #3dd6c6; color: #8ff0e5; }
