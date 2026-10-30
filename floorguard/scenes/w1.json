@@ -1,0 +1,36 @@
+{
+  "name": "w1",
+  "note": "Representative layout confirmed by hand from photo W1 (zebra crossing beside a steel column, pallet stacks to its right, forklift lane in front). Distances are approximate (±20%); the forklift lane runs along x, forklifts approach from +x toward the crossing at x=0; pedestrians walk from north (+y) to south across the lane.",
+  "crossing_x": 0.0,
+  "crossing_width": 2.0,
+  "lane_y0": 0.0,
+  "lane_y1": 3.5,
+  "ped_y_start": 8.0,
+  "ped_y_end": -3.0,
+  "stop_line_offset_m": 3.0,
+  "eye_block_height": 1.7,
+  "occluders": [
+    {"name": "steel column", "polygon": [[1.4, 3.6], [1.9, 3.6], [1.9, 4.1], [1.4, 4.1]], "height": 8.0},
+    {"name": "pallet stacks (right of crossing)", "polygon": [[2.4, 4.0], [18.0, 4.0], [18.0, 9.0], [2.4, 9.0]], "height": 2.0},
+    {"name": "pallet rows (left, below eye level)", "polygon": [[-12.0, 4.5], [-2.2, 4.5], [-2.2, 7.5], [-12.0, 7.5]], "height": 1.4},
+    {"name": "pallet stacks (near side)", "polygon": [[2.6, -6.0], [18.0, -6.0], [18.0, -0.4], [2.6, -0.4]], "height": 2.0}
+  ],
+  "mirror": {
+    "position": [1.65, 3.6],
+    "ped_sees_lane": [2.0, 0.0, 18.0, 3.5],
+    "ped_zone": [-1.5, 3.5, 1.5, 7.0],
+    "driver_sees_approach": [-1.5, 3.5, 1.5, 8.0],
+    "driver_zone": [2.0, 0.0, 14.0, 3.5]
+  },
+  "pallet_stress_rel": [0.9, 3.7, 2.3, 5.0],
+  "photo": {
+    "file": "w1.jpg",
+    "width": 1280,
+    "height": 997,
+    "credit": "Photo: “Modern warehouse with pallet rack storage system” by Axisadman, Wikimedia Commons, CC BY-SA 3.0",
+    "url": "https://commons.wikimedia.org/wiki/File:Modern_warehouse_with_pallet_rack_storage_system.jpg",
+    "crossing_box_px": [370, 735, 515, 800],
+    "column_box_px": [632, 190, 665, 845],
+    "forklift_box_px": [498, 790, 625, 960]
+  }
+}

@@ -1,0 +1,27 @@
+[project]
+name = "floorguard"
+version = "0.1.0"
+description = "Find the near miss before it finds your people."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=2.0",
+    "pydantic>=2.7",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "httpx>=0.27",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["floorguard"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

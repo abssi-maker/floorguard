@@ -1,0 +1,150 @@
+{
+ "budget_simulations": 20,
+ "stress_tests": [
+  "gate_compliance_60",
+  "mirror_ignored",
+  "shortcut_40"
+ ],
+ "limits": {
+  "target_conflicts_per_1000": 10.0,
+  "max_truck_delay_s": 2.5,
+  "budget_usd": 5000.0,
+  "crossings_per_shift": 600,
+  "forklift_passes_per_hour": 30
+ },
+ "random_search": {
+  "seeds": 20,
+  "found_rate": 0.4,
+  "median_best_conflicts_per_1000": 3.2,
+  "median_cost_usd": 4800.0,
+  "results": [
+   {
+    "controls": [
+     "8 km/h speed sign",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 4.1,
+    "example_cost_usd": 1300
+   },
+   null,
+   null,
+   null,
+   null,
+   null,
+   {
+    "controls": [
+     "convex mirror on the column",
+     "9 km/h speed sign",
+     "sensor-triggered floor warning light",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 2.2,
+    "example_cost_usd": 4950
+   },
+   null,
+   null,
+   {
+    "controls": [
+     "sensor-triggered floor warning light",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 4.5,
+    "example_cost_usd": 4700
+   },
+   null,
+   {
+    "controls": [
+     "convex mirror on the column",
+     "crossing moved 2 m from the column",
+     "barrier closing the old route",
+     "keep-clear marking at the new crossing",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 3.5,
+    "example_cost_usd": 4800
+   },
+   null,
+   {
+    "controls": [
+     "8 km/h speed sign",
+     "keep-clear marking at the new crossing",
+     "sensor-triggered floor warning light",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 2.5,
+    "example_cost_usd": 4950
+   },
+   null,
+   null,
+   {
+    "controls": [
+     "convex mirror on the column",
+     "sensor-triggered floor warning light",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 3.1,
+    "example_cost_usd": 4850
+   },
+   {
+    "controls": [
+     "7 km/h speed sign",
+     "sensor-triggered floor warning light",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 2.3,
+    "example_cost_usd": 4800
+   },
+   null,
+   {
+    "controls": [
+     "convex mirror on the column",
+     "9 km/h speed sign",
+     "keep-clear marking at the new crossing",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 3.3,
+    "example_cost_usd": 1600
+   }
+  ]
+ },
+ "agent": {
+  "runs": 3,
+  "found_rate": 1.0,
+  "median_best_conflicts_per_1000": 3.1,
+  "median_cost_usd": 2150,
+  "runs_detail": [
+   {
+    "id": "20261029-162007-2c10",
+    "controls": [
+     "convex mirror on the column",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 4.2,
+    "example_cost_usd": 1350,
+    "simulations_on_candidates": 20
+   },
+   {
+    "id": "20261029-162506-aa16",
+    "controls": [
+     "convex mirror on the column",
+     "crossing moved 3 m from the column",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 2.9,
+    "example_cost_usd": 2150,
+    "simulations_on_candidates": 20
+   },
+   {
+    "id": "20261029-162800-5f56",
+    "controls": [
+     "convex mirror on the column",
+     "sensor-triggered floor warning light",
+     "pedestrian gate at the lane edge"
+    ],
+    "conflict_rate_per_1000": 3.1,
+    "example_cost_usd": 4850,
+    "simulations_on_candidates": 20
+   }
+  ]
+ }
+}

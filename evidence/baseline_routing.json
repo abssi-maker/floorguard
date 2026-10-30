@@ -1,0 +1,33 @@
+{
+ "routed": [
+  {
+   "id": "20261029-162007-2c10",
+   "model_time_s": 59.0,
+   "fast_role_time_s": 5.9,
+   "cost_usd": 0.01346,
+   "calls": 5
+  },
+  {
+   "id": "20261029-162506-aa16",
+   "model_time_s": 37.1,
+   "fast_role_time_s": 4.5,
+   "cost_usd": 0.00835,
+   "calls": 4
+  },
+  {
+   "id": "20261029-162800-5f56",
+   "model_time_s": 81.1,
+   "fast_role_time_s": 3.7,
+   "cost_usd": 0.00947,
+   "calls": 5
+  }
+ ],
+ "all_ultra": {
+  "id": "20261029-164527-ca93",
+  "model_time_s": 98.7,
+  "fast_role_time_s": 34.6,
+  "cost_usd": 0.01388,
+  "calls": 6
+ },
+ "note": "Same loop; in all-Ultra mode the fast-role calls (stress-test pick, brief) also go to Nemotron 3 Ultra. Costs at Nebius list prices."
+}

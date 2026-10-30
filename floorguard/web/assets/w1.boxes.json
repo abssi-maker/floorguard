@@ -1,0 +1,170 @@
+{
+ "objects": [
+  {
+   "label": "counterbalance forklift",
+   "category": "vehicle",
+   "box": [
+    389,
+    812,
+    488,
+    966
+   ]
+  },
+  {
+   "label": "counterbalance forklift",
+   "category": "vehicle",
+   "box": [
+    0,
+    630,
+    42,
+    715
+   ]
+  },
+  {
+   "label": "counterbalance forklift",
+   "category": "vehicle",
+   "box": [
+    42,
+    584,
+    70,
+    635
+   ]
+  },
+  {
+   "label": "counterbalance forklift",
+   "category": "vehicle",
+   "box": [
+    214,
+    562,
+    250,
+    604
+   ]
+  },
+  {
+   "label": "person",
+   "category": "person",
+   "box": [
+    185,
+    660,
+    207,
+    705
+   ]
+  },
+  {
+   "label": "person",
+   "category": "person",
+   "box": [
+    207,
+    658,
+    229,
+    730
+   ]
+  },
+  {
+   "label": "person",
+   "category": "person",
+   "box": [
+    347,
+    545,
+    360,
+    580
+   ]
+  },
+  {
+   "label": "person",
+   "category": "person",
+   "box": [
+    376,
+    555,
+    388,
+    585
+   ]
+  },
+  {
+   "label": "person",
+   "category": "person",
+   "box": [
+    407,
+    830,
+    440,
+    885
+   ]
+  },
+  {
+   "label": "sightline_blocker",
+   "category": "sightline_blocker",
+   "box": [
+    492,
+    190,
+    520,
+    850
+   ]
+  },
+  {
+   "label": "sightline_blocker",
+   "category": "sightline_blocker",
+   "box": [
+    188,
+    260,
+    210,
+    650
+   ]
+  },
+  {
+   "label": "crossing_marking",
+   "category": "crossing_marking",
+   "box": [
+    290,
+    755,
+    400,
+    805
+   ]
+  },
+  {
+   "label": "conflict_point",
+   "category": "conflict_point",
+   "box": [
+    430,
+    800,
+    470,
+    840
+   ]
+  },
+  {
+   "label": "conflict_point",
+   "category": "conflict_point",
+   "box": [
+    200,
+    690,
+    240,
+    730
+   ]
+  },
+  {
+   "label": "conflict_point",
+   "category": "conflict_point",
+   "box": [
+    340,
+    560,
+    380,
+    590
+   ]
+  }
+ ],
+ "latency_s": 23.3,
+ "usage": {
+  "prompt_tokens": 1485,
+  "completion_tokens": 685,
+  "total_tokens": 2170,
+  "prompt_tokens_details": {
+   "audio_tokens": null,
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": null,
+   "audio_tokens": null,
+   "reasoning_tokens": 0,
+   "rejected_prediction_tokens": null
+  }
+ }
+}

@@ -1,0 +1,5 @@
+runs/uploads/
+.venv/
+__pycache__/
+.env
+.env.*
