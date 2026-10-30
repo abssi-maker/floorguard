@@ -44,7 +44,7 @@ function tweenCount(target, close) {
   const el = $("#count"), cc = $("#close"), from = S.crossings, fromC = S.close, t0 = performance.now();
   S.crossings = target; S.close = close;
   const tick = (t) => {
-    const k = Math.min(1, (t - t0) / 1400), e = 1 - (1 - k) ** 3;
+    const k = Math.min(1, Math.max(0, (t - t0) / 1400)), e = 1 - (1 - k) ** 3;
     el.textContent = Math.round(from + (target - from) * e).toLocaleString("en-US");
     cc.textContent = Math.round(fromC + (close - fromC) * e).toLocaleString("en-US");
     if (k < 1) requestAnimationFrame(tick);
