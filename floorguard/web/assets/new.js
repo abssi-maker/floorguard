@@ -43,8 +43,8 @@ const stage = (title, meta = "") => { $("#stageTitle").textContent = title; $("#
 function tweenCount(target, close) {
   const el = $("#count"), cc = $("#close"), from = S.crossings, fromC = S.close, t0 = performance.now();
   S.crossings = target; S.close = close;
-  const tick = (t) => {
-    const k = Math.min(1, Math.max(0, (t - t0) / 1400)), e = 1 - (1 - k) ** 3;
+  const tick = () => {
+    const k = Math.min(1, Math.max(0, (performance.now() - t0) / 1400)), e = 1 - (1 - k) ** 3;
     el.textContent = Math.round(from + (target - from) * e).toLocaleString("en-US");
     cc.textContent = Math.round(fromC + (close - fromC) * e).toLocaleString("en-US");
     if (k < 1) requestAnimationFrame(tick);
@@ -172,12 +172,12 @@ const handlers = {
     stage("Live simulation", "simulated results");
     caption(`Every forklift and person below is a real simulated crossing: random speeds, reaction times and arrival times. <b>Red dashes</b>: they can't see each other. A <b>red ring</b> marks a close call (time to collision under 1.5 s, or contact).`);
     feed("sim1", "sim", "Testing today's layout and every control on its own, 10,000 crossings each…");
+    if (S.pending) { tweenCount(S.pending.crossings, S.pending.close_calls); S.pending = null; }
     try {
       const data = await api("/api/crossings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package: {}, k: 40 }) });
       $("#photoLayer").style.display = "none";
       S.player = crossingsPlayer($("#mapLayer"), S.scene, data, { stagger: 6 });
     } catch {}
-    if (S.pending) { tweenCount(S.pending.crossings, S.pending.close_calls); S.pending = null; }
   },
   single_controls_done: async (ev) => {
     S.singles = ev.table;
