@@ -75,19 +75,27 @@ function pickScreen() {
       <a class="btn quiet" id="replayLink" href="#">Watch recorded demo</a></div></div>`;
   setStep(0);
   let file = null;
-  const show = (src, name) => { $("#start").disabled = false; $("#start").title = ""; $("#chosen").innerHTML = `<div style="margin-top:1rem;display:grid;grid-template-columns:260px 1fr;gap:1rem;align-items:center"><img class="preview" src="${esc(src)}" alt=""><p class="meta">${esc(name)}<br>Nemotron Super VL will read this photo.</p></div>`; };
+  const drop = $("#drop");
+  const show = (src, name) => {
+    $("#start").disabled = false; $("#start").title = ""; $("#chosen").innerHTML = "";
+    drop.classList.add("has");
+    drop.innerHTML = `<div class="picked"><img src="${esc(src)}" alt="The photo to simulate"><div><p class="tag">Photo ready</p><h3 style="margin-top:.6rem">${esc(name)}</h3>
+      <p>Nemotron Super VL will read this photo, then FloorGuard simulates the intersection.</p>
+      <label class="btn quiet" style="margin-top:.9rem">Choose another photo<input type="file" accept="image/jpeg,image/png" id="file2" hidden></label></div></div>`;
+    $("#file2").addEventListener("change", (e) => take(e.target.files[0]));
+  };
   const take = (f) => {
     if (!f || !/^image\/(jpeg|png)$/.test(f.type)) { $("#chosen").innerHTML = `<p class="red" style="margin-top:1rem">Use a JPEG or PNG photo.</p>`; return; }
     file = f; show(URL.createObjectURL(f), f.name);
   };
   $("#file").addEventListener("change", (e) => take(e.target.files[0]));
-  const drop = $("#drop");
   drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
   drop.addEventListener("dragleave", () => drop.classList.remove("over"));
   drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); take(e.dataTransfer.files[0]); });
   $("#useSample").addEventListener("click", () => { file = null; show("/assets/w1.jpg", "Sample warehouse photo (Wikimedia Commons, CC BY-SA 3.0)"); });
   $("#replayLink").addEventListener("click", async (e) => { e.preventDefault(); const runs = await api("/api/runs"); if (runs[0]) startReplay(runs[0].id); });
   $("#start").addEventListener("click", () => startLive(file));
+  if (new URLSearchParams(location.search).has("sample")) $("#useSample").click();
 }
 
 function simScreen() {
