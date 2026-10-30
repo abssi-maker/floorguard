@@ -172,8 +172,11 @@ const handlers = {
     await sleep(2200);
     if (S.replay) { caption($("#caption").innerHTML + `<p class="meta" style="margin-top:.5rem">Map confirmed by a person in this recorded run.</p>`); await sleep(2200); }
     else {
-      caption($("#caption").innerHTML + `<div class="confirm" style="margin-top:.8rem"><span>Check the crossing, the column and the forklift lane.</span><button class="btn primary" id="confirmMap">Confirm map &amp; simulate</button></div>`);
+      // the confirm step sits on the map itself, where the user is looking
+      $("#canvas").insertAdjacentHTML("beforeend", `<div class="confirm-bar" id="confirmBar"><div><b>Is this your intersection?</b><span>Check the crossing, the column and the forklift lane.</span></div><button class="btn primary" id="confirmMap">Confirm map &amp; simulate</button></div>`);
+      $("#canvas").scrollIntoView({ behavior: "smooth", block: "center" });
       await new Promise((r) => $("#confirmMap").addEventListener("click", r, { once: true }));
+      $("#confirmBar").remove();
     }
     setStep(3);
     stage("Live simulation", "simulated results");
